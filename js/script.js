@@ -1,60 +1,38 @@
-const button = document.querySelector('.button-add-task')
-const input = document.querySelector('.input-task')
-const listComplete = document.querySelector('.list-task')
+$(document).ready(function () {
+    $('.edit-button').on('click', function () {
+        var task = $(this).closest('.task');
+        task.find('.progress').addClass('hidden');
+        task.find('.task-description').addClass('hidden');
+        task.find('.task-actions').addClass('hidden');
+        task.find('.edit-task').removeClass('hidden');
+    });
 
-let listItems = []
+    $('.progress').on('click', function () {
+        if ($(this).is(':checked')) {
+            $(this).addClass('done');
+        } else {
+            $(this).removeClass('done');
+        }
+    });
 
+    $('.progress').on('change', function () {
+        const id = $(this).data('task-id');
+        const completed = $(this).is(':checked') ? 1 : 0;
+        $.ajax({
+            url: '../../actions/update-progress.php',
+            method: 'POST',
+            data: {id: id, completed: completed},
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
 
-function addTask() {
-  listItems.push({
-    task: input.value,
-    checked: false
-  })
-
-  input.value = ''
-  input.focus()
-
-  showTask()
-}
-
-function showTask() {
-  let newItem = ''
-  listItems.forEach((item, position) => {
-    newItem = newItem + `
-      <li class="task ${item.checked && 'done'}">
-        <img src="img/checked.png" alt="Check" onclick='checkItem(${position})'>
-        <p>${item.task}</p>
-        <img src="img/trash.png" alt="Excluir" onclick='deleteItem(${position})'>
-      </li>
-    `
-  })
-  listComplete.innerHTML = newItem
-
-  localStorage.setItem('Lista', JSON.stringify(listItems))
-}
-
-button.addEventListener('click', addTask)
-
-function deleteItem(position) {
-  listItems.splice(position, 1)
-
-  showTask()
-}
-
-function checkItem(position) {
-  listItems[position].checked = !listItems[position].checked
-  
-  showTask()
-}
-
-function restartTask() {
-  const taskLocalStorage = localStorage.getItem('Lista')
-
-  if(taskLocalStorage){
-    listItems = JSON.parse(taskLocalStorage)
-  }
-
-  showTask()
-}
-
-restartTask()
+                } else {
+                    alert('Erro ao editar a tarefa');
+                }
+            },
+            error: function () {
+                alert('Ocorreu um erro');
+            }
+        });
+    })
+});
