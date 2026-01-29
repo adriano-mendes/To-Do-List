@@ -12,6 +12,13 @@ body {
   background: url("../img/background.png");
 }
 
+h1 {
+    font-size: 36px;
+    text-align: center;
+    color: #003329;
+    padding-bottom: 20px;
+}
+
 .container {
   background-color: #d1d1d1;
   width: 500px;
